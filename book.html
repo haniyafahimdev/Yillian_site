@@ -473,11 +473,15 @@
 
       // notify Yilian via email (fails silently if not set up yet — the booking is still saved)
       try{
-        await fetch('/api/send-email', {
+        const emailRes = await fetch('/api/send-email', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ type: 'new', bookingId: docRef.id, ...booking, images: imageUrls, createdAt: undefined })
         });
+        if(!emailRes.ok){
+          const errBody = await emailRes.json().catch(() => ({}));
+          console.warn('Booking saved, but notification email failed:', emailRes.status, errBody.detail || errBody.error || '');
+        }
       }catch(emailErr){
         console.warn('Booking saved, but notification email failed:', emailErr);
       }
