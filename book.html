@@ -232,6 +232,10 @@
           <input id="contact" type="text" placeholder="Best way to reach you" required>
         </div>
         <div class="field">
+          <label for="instagram">Instagram Handle (optional)</label>
+          <input id="instagram" type="text" placeholder="@yourhandle">
+        </div>
+        <div class="field">
           <label for="notes">Notes (optional)</label>
           <textarea id="notes" placeholder="Design inspo, nail length, anything else"></textarea>
         </div>
@@ -436,6 +440,8 @@
 
     const name = document.getElementById('name').value.trim();
     const contact = document.getElementById('contact').value.trim();
+    let instagram = document.getElementById('instagram').value.trim();
+    if(instagram && !instagram.startsWith('@')) instagram = '@' + instagram;
     const notes = document.getElementById('notes').value.trim();
 
     if(!name || !contact){ showStatus('Please fill in your name and contact info.', 'error'); return; }
@@ -447,7 +453,7 @@
       service: serviceSelect.value,
       date: dateInput.value,
       time: selectedSlot,
-      name, contact, notes,
+      name, contact, instagram, notes,
       images: [],
       status: 'pending',
       createdAt: serverTimestamp()
