@@ -13,10 +13,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { type, date, time, service, name, contact, notes, images } = req.body || {};
+  const { type, date, time, service, name, contact, instagram, notes, images } = req.body || {};
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'haniyafahim.dev@gmail.com';
+  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'haniya_fahim@hotmail.com';
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
   if (!RESEND_API_KEY) {
@@ -40,6 +40,7 @@ export default async function handler(req, res) {
         ['Date', prettyDate],
         ['Time', prettyTime],
         ['Contact', escapeHtml(contact)],
+        ...(instagram ? [['Instagram', escapeHtml(instagram)]] : []),
         ...(notes ? [['Notes', escapeHtml(notes)]] : [])
       ],
       imagesHtml: (images && images.length)
@@ -53,21 +54,49 @@ export default async function handler(req, res) {
       footerNote: 'Confirm or decline this request from your admin dashboard.'
     });
   } else if (type === 'confirmed') {
-    to = contact && contact.includes('@') ? contact : YILIAN_EMAIL;
-    replyTo = YILIAN_EMAIL;
-    subject = `You're booked! ${prettyDate} at ${prettyTime}`;
-    html = emailTemplate({
-      heading: 'You\'re All Set 🌸',
-      intro: `Hi ${escapeHtml(name || 'there')}, your appointment is confirmed!`,
-      rows: [
-        ['Service', escapeHtml(service)],
-        ['Date', prettyDate],
-        ['Time', prettyTime]
-      ],
-      ctaLabel: 'Message on Instagram',
-      ctaUrl: 'https://instagram.com/nailsby_yilian',
-      footerNote: 'See you then! Reply to this email or reach out on Instagram @nailsby_yilian if anything changes.'
-    });
+    const hasEmail = contact && contact.includes('@');
+
+    if (hasEmail) {
+      to = contact;
+      replyTo = YILIAN_EMAIL;
+      subject = `You're booked! ${prettyDate} at ${prettyTime}`;
+      html = emailTemplate({
+        heading: 'You\'re All Set 🌸',
+        intro: `Hi ${escapeHtml(name || 'there')}, your appointment is confirmed!`,
+        rows: [
+          ['Service', escapeHtml(service)],
+          ['Date', prettyDate],
+          ['Time', prettyTime]
+        ],
+        ctaLabel: 'Message on Instagram',
+        ctaUrl: 'https://instagram.com/nailsby_yilian',
+        footerNote: 'See you then! Reply to this email or reach out on Instagram @nailsby_yilian if anything changes.'
+      });
+    } else {
+      // No email on file — this person only gave a phone number, so there's
+      // nowhere to send *them* a confirmation email. Instead, remind Yilian
+      // to confirm with them directly, with a WhatsApp link pre-filled with
+      // a ready-to-send message so it's a single tap, not retyping everything.
+      to = YILIAN_EMAIL;
+      subject = `Reminder: confirm with ${name || 'client'} via WhatsApp`;
+      const waDigits = (contact || '').replace(/\D/g, '');
+      const waMessage = encodeURIComponent(`Hi ${name || ''}! Your ${service || 'appointment'} is confirmed for ${prettyDate} at ${prettyTime}. See you then! 🌸`);
+      const waUrl = waDigits ? `https://wa.me/${waDigits}?text=${waMessage}` : 'https://web.whatsapp.com';
+      html = emailTemplate({
+        heading: 'Confirm With Your Client',
+        intro: `${escapeHtml(name || 'This client')} only left a phone number, so they can't get an email confirmation — send them one on WhatsApp instead.`,
+        rows: [
+          ['Service', escapeHtml(service)],
+          ['Date', prettyDate],
+          ['Time', prettyTime],
+          ['Phone', escapeHtml(contact)],
+          ...(instagram ? [['Instagram', escapeHtml(instagram)]] : [])
+        ],
+        ctaLabel: 'Confirm on WhatsApp',
+        ctaUrl: waUrl,
+        footerNote: 'The button above opens a WhatsApp chat with a confirmation message already written — just hit send.'
+      });
+    }
   } else {
     return res.status(400).json({ error: 'Unknown email type' });
   }
