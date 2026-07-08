@@ -488,6 +488,7 @@
           <div class="booking-date">${formatDate(b.date)} · ${formatTime(b.time)}</div>
           <div class="booking-service">${escapeHtml(b.service || '')}</div>
           <div class="booking-client">${escapeHtml(b.contact || '')}</div>
+          ${b.instagram ? `<div class="booking-client"><a href="https://instagram.com/${escapeHtml(b.instagram.replace('@',''))}" target="_blank" rel="noopener" style="color:var(--gold);">${escapeHtml(b.instagram)}</a></div>` : ''}
           ${imagesHtml}
           ${b.notes ? `<div class="booking-notes">"${escapeHtml(b.notes)}"</div>` : ''}
           <span class="badge ${b.status}">${b.status}</span>
