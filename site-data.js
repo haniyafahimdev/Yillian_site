@@ -8,16 +8,19 @@
 
 import { db } from './firebase-config.js';
 import {
-  collection, query, where, orderBy, getDocs, doc, getDoc
+  collection, query, orderBy, getDocs, doc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Active services only, in display order. Used by services.html, book.html,
 // and the "Popular Services" preview on index.html.
 export async function getActiveServices(){
   try{
-    const q = query(collection(db, 'services'), where('active', '==', true), orderBy('order', 'asc'));
+    // Note: sorting by 'order' but filtering 'active' client-side (rather than
+    // a Firestore where+orderBy on two different fields) deliberately avoids
+    // needing a composite index set up in the Firebase console.
+    const q = query(collection(db, 'services'), orderBy('order', 'asc'));
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.active);
   }catch(err){
     console.error('Could not load services:', err);
     return [];
