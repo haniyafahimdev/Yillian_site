@@ -513,11 +513,15 @@
       if(newStatus === 'confirmed'){
         const booking = allBookings.find(b => b.id === id);
         try{
-          await fetch('/api/send-email', {
+          const emailRes = await fetch('/api/send-email', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ type: 'confirmed', bookingId: id, ...booking })
           });
+          if(!emailRes.ok){
+            const errBody = await emailRes.json().catch(() => ({}));
+            console.warn('Status updated, but confirmation email failed:', emailRes.status, errBody.detail || errBody.error || '');
+          }
         }catch(emailErr){
           console.warn('Status updated, but confirmation email failed:', emailErr);
         }
