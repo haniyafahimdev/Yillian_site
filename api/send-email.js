@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const { type, date, time, service, name, contact, notes, images } = req.body || {};
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'you@example.com';
+  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'haniya_fahim@hotmail.com';
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
   if (!RESEND_API_KEY) {
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     if (!resendRes.ok) {
       const errText = await resendRes.text();
       console.error('Resend error:', errText);
-      return res.status(502).json({ error: 'Email provider error' });
+      return res.status(502).json({ error: 'Email provider error', detail: errText });
     }
 
     return res.status(200).json({ sent: true });
