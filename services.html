@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Yilian Nail Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#f6d3da; --blush-deep:#efb9c5; --lilac:#ecdff3; --warm-white:#fdfaf7;
+    --dusty-rose:#c9968a; --rose-deep:#b4707d; --gold:#d4af7a;
+    --ink:#6b4650; --ink-soft:#a9838a;
+    --glass-bg:rgba(255,255,255,0.55); --glass-border:rgba(255,255,255,0.75);
+    --max-w:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--warm-white); color:var(--ink); font-family:'Jost',sans-serif; font-weight:300; overflow-x:hidden;}
+  h1,h2,h3{font-family:'Cormorant Garamond',serif; font-weight:500; margin:0; color:var(--rose-deep);}
+  .script{font-family:'Parisienne',cursive; font-weight:400; color:var(--rose-deep); line-height:1;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--max-w); margin:0 auto; padding:0 32px;}
+
+  .blob-field{position:fixed; inset:0; z-index:0; overflow:hidden; background:var(--warm-white);}
+  .blob{position:absolute; border-radius:50%; filter:blur(85px);}
+  .blob1{width:560px; height:560px; background:var(--blush); top:-160px; left:-140px; opacity:0.7;}
+  .blob2{width:460px; height:460px; background:var(--lilac); top:22%; right:-160px; opacity:0.65;}
+  .blob3{width:520px; height:520px; background:var(--gold); bottom:-200px; left:12%; opacity:0.35;}
+  .blob-field::after{content:''; position:absolute; inset:0; background:rgba(253,250,247,0.42);}
+
+  .page{position:relative; z-index:1;}
+  .glass{background:var(--glass-bg); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--glass-border); box-shadow:0 24px 48px -28px rgba(180,112,125,0.4);}
+
+  header{position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:100; width:min(94%,1080px);}
+  .nav-glass{display:flex; align-items:center; justify-content:space-between; padding:12px 14px 12px 22px; border-radius:999px;}
+  .brand{font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-style:italic; font-weight:500; color:var(--rose-deep); display:flex; align-items:center; gap:8px;}
+  .brand svg{width:20px; height:20px;}
+  nav ul{list-style:none; display:flex; gap:30px; margin:0; padding:0;}
+  nav a{font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft); transition:color .3s ease;}
+  nav a:hover{color:var(--rose-deep);}
+  nav a.current{color:var(--rose-deep);}
+  .nav-cta{font-size:0.76rem; letter-spacing:0.08em; text-transform:uppercase; background:linear-gradient(135deg, var(--rose-deep), var(--gold)); padding:11px 22px; border-radius:999px; color:#fff; box-shadow:0 10px 24px -10px rgba(180,112,125,0.6); transition:transform .3s ease;}
+  .nav-cta:hover{transform:translateY(-2px);}
+  .menu-toggle{display:none; background:none; border:none; font-size:1.4rem; color:var(--rose-deep); cursor:pointer; padding:6px 10px;}
+  .mobile-panel{display:none;}
+
+  .hero-band{padding:150px 24px 60px; text-align:center;}
+  .hero-band .script{font-size:1.7rem; margin-bottom:4px;}
+  .hero-band h1{font-size:clamp(2.4rem,5.5vw,3.6rem);}
+  .hero-band p{color:var(--ink-soft); max-width:480px; margin:16px auto 0; line-height:1.7;}
+
+  section{padding:40px 0 70px; position:relative;}
+  .category-head{display:flex; align-items:baseline; gap:14px; margin-bottom:26px;}
+  .category-head h2{font-size:clamp(1.6rem,3vw,2.1rem);}
+  .category-head span{height:1px; flex:1; background:rgba(180,112,125,0.2);}
+
+  .service-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:22px; margin-bottom:56px;}
+  .service-card{border-radius:24px; padding:28px 26px; transition:transform .3s ease, box-shadow .3s ease;}
+  .service-card:hover{transform:translateY(-5px); box-shadow:0 28px 50px -24px rgba(180,112,125,0.5);}
+  .service-card h3{font-size:1.35rem; margin-bottom:6px;}
+  .service-card p{color:var(--ink-soft); font-size:0.9rem; line-height:1.6; margin:0 0 20px;}
+  .service-price{display:flex; align-items:baseline; justify-content:space-between; border-top:1px solid rgba(180,112,125,0.18); padding-top:14px;}
+  .service-price b{font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold); font-weight:600;}
+  .service-price small{font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft);}
+  .service-price.ask b{font-size:1.05rem; color:var(--rose-deep);}
+
+  .cta-band{text-align:center; padding:60px 0 100px;}
+  .cta-band p.script{font-size:1.6rem; margin-bottom:8px;}
+  .btn-primary{
+    display:inline-flex; align-items:center; gap:10px; margin-top:14px;
+    padding:17px 38px; background:linear-gradient(135deg, var(--rose-deep), var(--gold));
+    color:#fff; font-size:0.82rem; letter-spacing:0.14em; text-transform:uppercase;
+    border-radius:999px; box-shadow:0 18px 36px -14px rgba(180,112,125,0.55);
+    transition:transform .35s ease;
+  }
+  .btn-primary:hover{transform:translateY(-3px) scale(1.02);}
+  .btn-primary svg{width:14px; height:14px;}
+
+  .price-note{text-align:center; color:var(--ink-soft); font-size:0.85rem; font-style:italic; max-width:480px; margin:0 auto 20px;}
+
+  footer{background:linear-gradient(135deg, var(--rose-deep), #c99a6e); color:#fff; padding:56px 0 28px; text-align:center;}
+  footer .brand{color:#fff; font-size:1.6rem; margin-bottom:8px; justify-content:center;}
+  footer p{color:rgba(255,255,255,0.7); font-size:0.85rem; margin:5px 0;}
+  footer .foot-links{display:flex; justify-content:center; gap:22px; margin:20px 0; list-style:none; padding:0; flex-wrap:wrap;}
+  footer .foot-links a{font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.85);}
+  footer .foot-links a:hover{color:#fff2dc;}
+
+  .floating-cta{
+    position:fixed; bottom:24px; right:24px; z-index:90;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:15px 26px; border-radius:999px;
+    background:linear-gradient(135deg, var(--rose-deep), var(--gold)); color:#fff;
+    font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;
+    box-shadow:0 16px 32px -12px rgba(180,112,125,0.6);
+    transition:transform .3s ease;
+  }
+  .floating-cta svg{width:13px; height:13px;}
+  .floating-cta:hover{transform:translateY(-3px) scale(1.03);}
+
+  .reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media (max-width:760px){
+    nav ul{display:none;}
+    .nav-cta{display:none;}
+    .menu-toggle{display:block;}
+    .mobile-panel.open{display:flex;}
+    .mobile-panel{display:none; flex-direction:column; gap:4px; position:absolute; top:64px; left:0; right:0; border-radius:24px; padding:14px; z-index:99;}
+    .mobile-panel a{padding:12px 14px; font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink);}
+    .mobile-panel a.mobile-cta{margin-top:6px; text-align:center; border-radius:999px; background:linear-gradient(135deg,var(--rose-deep),var(--gold)); color:#fff;}
+    .hero-band{padding:120px 20px 50px;}
+    .floating-cta{bottom:16px; left:50%; right:auto; transform:translateX(-50%);}
+    .floating-cta:hover{transform:translateX(-50%) translateY(-3px) scale(1.03);}
+  }
+  /* ---------- page loader ---------- */
+  .page-loader{
+    position:fixed; inset:0; z-index:9999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    background:linear-gradient(160deg, var(--blush) 0%, var(--warm-white) 65%);
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  .page-loader.loader-hidden{opacity:0; visibility:hidden; pointer-events:none;}
+  .loader-flower{width:60px; height:60px;}
+  .loader-petals .petal{
+    fill:var(--blush-deep); stroke:var(--dusty-rose); stroke-width:0.8;
+    transform-origin:50px 50px; opacity:0; animation:loaderBloom 1.7s ease-in-out infinite;
+  }
+  .loader-petals .p1{animation-delay:0s;}
+  .loader-petals .p2{animation-delay:.15s;}
+  .loader-petals .p3{animation-delay:.3s;}
+  .loader-petals .p4{animation-delay:.45s;}
+  .loader-center{fill:var(--gold);}
+  @keyframes loaderBloom{
+    0%{opacity:0; transform:scale(0.3) rotate(-8deg);}
+    35%{opacity:1; transform:scale(1) rotate(0deg);}
+    70%{opacity:1; transform:scale(1) rotate(0deg);}
+    100%{opacity:0.5; transform:scale(0.82) rotate(4deg);}
+  }
+  .loader-word{font-family:'Parisienne',cursive; font-size:1.6rem; color:var(--rose-deep); opacity:0.92; letter-spacing:0.02em;}
+  @media (prefers-reduced-motion: reduce){
+    .loader-petals .petal{animation:none; opacity:1; transform:scale(1);}
+  }
+</style>
+</head>
+<body>
+<!-- ===================== PAGE LOADER ===================== -->
+<div id="pageLoader" class="page-loader" aria-hidden="true">
+  <svg class="loader-flower" viewBox="0 0 100 100">
+    <g class="loader-petals">
+      <path class="petal p1" d="M50,50 C50,30 40,12 50,4 C60,12 50,30 50,50 Z"/>
+      <path class="petal p2" d="M50,50 C70,50 88,40 96,50 C88,60 70,50 50,50 Z"/>
+      <path class="petal p3" d="M50,50 C50,70 60,88 50,96 C40,88 50,70 50,50 Z"/>
+      <path class="petal p4" d="M50,50 C30,50 12,60 4,50 C12,40 30,50 50,50 Z"/>
+    </g>
+    <circle class="loader-center" cx="50" cy="50" r="9"/>
+  </svg>
+  <p class="loader-word">Yilian</p>
+</div>
+<script>
+  (function(){
+    var loader = document.getElementById('pageLoader');
+    if(!loader) return;
+    document.documentElement.style.overflow = 'hidden';
+    var minTime = new Promise(function(res){ setTimeout(res, 2000); });
+    var pageReady = new Promise(function(res){
+      if(document.readyState === 'complete') res();
+      else window.addEventListener('load', res);
+    });
+    Promise.all([minTime, pageReady]).then(function(){
+      loader.classList.add('loader-hidden');
+      document.documentElement.style.overflow = '';
+      setTimeout(function(){ if(loader.parentNode) loader.remove(); }, 650);
+    });
+  })();
+</script>
+
+
+<div class="blob-field" aria-hidden="true">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="page">
+
+
+<header>
+  <div class="nav-glass glass">
+    <a href="#" class="brand"><svg viewBox="0 0 100 100"><use href="#blossom-simple-fill"/></svg>Yilian</a>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <a href="book.html" class="nav-cta">Book Now</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
+  </div>
+  <div class="mobile-panel glass" id="mobilePanel">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="book.html" class="mobile-cta">Book Now</a>
+  </div>
+</header>
+
+
+<div class="hero-band">
+  <p class="script">the full menu</p>
+  <h1>All Services</h1>
+  <p>Everything on offer, from everyday manicures to full acrylic sets and brows. Not sure what you need? DM on Instagram or WhatsApp and I'll help you pick.</p>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="price-note">Prices below are starting points — exact pricing can vary with length, design complexity, and add-ons. A few are marked "ask for pricing" since they're quoted per style.</p>
+
+    <div id="servicesContainer">
+      <p style="text-align:center; color:var(--ink-soft); font-style:italic; font-family:'Parisienne',cursive; font-size:1.3rem;">Loading services…</p>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band wrap reveal">
+  <p class="script">ready when you are</p>
+  <h2>Let's Get You Booked</h2>
+  <a href="book.html" class="btn-primary">
+    Book Now
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </a>
+</div>
+
+<footer>
+  <div class="wrap">
+    <a href="index.html" class="brand">Yilian</a>
+    <p class="script" style="color:#fff; font-size:1.3rem; opacity:0.9;">with love, always</p>
+    <ul class="foot-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="https://instagram.com/nailsby_yilian" target="_blank" rel="noopener">Instagram</a></li>
+    </ul>
+    <p>Nail Tech in Houston</p>
+    <p>&copy; <span id="year"></span> Yilian. All rights reserved.</p>
+  </div>
+</footer>
+
+</div>
+
+<a href="book.html" class="floating-cta">
+  Book Now
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+</a>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const menuToggle = document.getElementById('menuToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuToggle.addEventListener('click', () => mobilePanel.classList.toggle('open'));
+  mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobilePanel.classList.remove('open')));
+
+  function observeReveals(){
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in'); } });
+    }, {threshold:0.12});
+    revealEls.forEach(el => io.observe(el));
+  }
+  observeReveals();
+</script>
+
+<script type="module">
+  import { getActiveServices, formatServicePrice } from './site-data.js';
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  async function renderServices(){
+    const container = document.getElementById('servicesContainer');
+    const services = await getActiveServices();
+
+    if(services.length === 0){
+      container.innerHTML = '<p style="text-align:center; color:var(--ink-soft); font-style:italic; font-family:\'Parisienne\',cursive; font-size:1.3rem;">The menu is being updated — check back soon, or DM on Instagram.</p>';
+      return;
+    }
+
+    const categories = [];
+    const byCategory = {};
+    services.forEach(s => {
+      const cat = s.category || 'Other';
+      if(!byCategory[cat]){ byCategory[cat] = []; categories.push(cat); }
+      byCategory[cat].push(s);
+    });
+
+    container.innerHTML = categories.map(cat => {
+      const cardsHtml = byCategory[cat].map(s => {
+        const priceInfo = formatServicePrice(s);
+        const priceHtml = priceInfo.isAsk
+          ? `<div class="service-price ask"><b>Ask for pricing</b></div>`
+          : `<div class="service-price"><b>${priceInfo.label}</b>${priceInfo.sub ? `<small>${priceInfo.sub}</small>` : ''}</div>`;
+        return `
+          <div class="service-card glass reveal">
+            <h3>${escapeHtml(s.name)}</h3>
+            <p>${escapeHtml(s.description || '')}</p>
+            ${priceHtml}
+          </div>`;
+      }).join('');
+      return `
+        <div class="category-head reveal"><h2>${escapeHtml(cat)}</h2><span></span></div>
+        <div class="service-grid">${cardsHtml}</div>`;
+    }).join('');
+
+    observeReveals();
+  }
+
+  renderServices();
+</script>
+
+</body>
+</html>
