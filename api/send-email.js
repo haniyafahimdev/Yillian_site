@@ -27,32 +27,47 @@ export default async function handler(req, res) {
   const prettyDate = date ? new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : date;
   const prettyTime = formatTime(time);
 
-  let to, subject, html;
+  let to, subject, html, replyTo;
 
   if (type === 'new') {
     to = YILIAN_EMAIL;
     subject = `New booking request — ${name || 'someone'}, ${prettyDate}`;
-    html = `
-      <div style="font-family:sans-serif; color:#6b4650;">
-        <h2 style="color:#b4707d;">New booking request 🌸</h2>
-        <p><strong>${escapeHtml(service)}</strong> on <strong>${prettyDate}</strong> at <strong>${prettyTime}</strong></p>
-        <p>From: ${escapeHtml(name)} (${escapeHtml(contact)})</p>
-        ${notes ? `<p>Notes: <em>${escapeHtml(notes)}</em></p>` : ''}
-        ${images && images.length ? `<p>Inspo photos: ${images.map((url, i) => `<a href="${url}">Photo ${i + 1}</a>`).join(' &middot; ')}</p>` : ''}
-        <p style="margin-top:20px;">Confirm or decline it from your admin dashboard.</p>
-      </div>
-    `;
+    html = emailTemplate({
+      heading: 'New Booking Request',
+      intro: `${escapeHtml(name || 'Someone')} would like to book an appointment.`,
+      rows: [
+        ['Service', escapeHtml(service)],
+        ['Date', prettyDate],
+        ['Time', prettyTime],
+        ['Contact', escapeHtml(contact)],
+        ...(notes ? [['Notes', escapeHtml(notes)]] : [])
+      ],
+      imagesHtml: (images && images.length)
+        ? `<tr><td style="padding:6px 0;">
+             <p style="margin:0 0 8px; font-family:Georgia,serif; font-size:13px; color:#a9838a; text-transform:uppercase; letter-spacing:1px;">Inspo Photos</p>
+             ${images.map(url => `<a href="${url}" style="display:inline-block; margin:0 8px 8px 0;"><img src="${url}" width="72" height="72" style="border-radius:10px; object-fit:cover; display:block;"></a>`).join('')}
+           </td></tr>`
+        : '',
+      ctaLabel: 'Review in Dashboard',
+      ctaUrl: 'https://yillian-site.vercel.app/admin.html',
+      footerNote: 'Confirm or decline this request from your admin dashboard.'
+    });
   } else if (type === 'confirmed') {
     to = contact && contact.includes('@') ? contact : YILIAN_EMAIL;
+    replyTo = YILIAN_EMAIL;
     subject = `You're booked! ${prettyDate} at ${prettyTime}`;
-    html = `
-      <div style="font-family:sans-serif; color:#6b4650;">
-        <h2 style="color:#b4707d;">Your appointment is confirmed 🌸</h2>
-        <p><strong>${escapeHtml(service)}</strong></p>
-        <p>${prettyDate} at ${prettyTime}</p>
-        <p style="margin-top:20px;">See you then! Reply to this email or DM @nailsby_yilian if anything changes.</p>
-      </div>
-    `;
+    html = emailTemplate({
+      heading: 'You\'re All Set 🌸',
+      intro: `Hi ${escapeHtml(name || 'there')}, your appointment is confirmed!`,
+      rows: [
+        ['Service', escapeHtml(service)],
+        ['Date', prettyDate],
+        ['Time', prettyTime]
+      ],
+      ctaLabel: 'Message on Instagram',
+      ctaUrl: 'https://instagram.com/nailsby_yilian',
+      footerNote: 'See you then! Reply to this email or reach out on Instagram @nailsby_yilian if anything changes.'
+    });
   } else {
     return res.status(400).json({ error: 'Unknown email type' });
   }
@@ -64,7 +79,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ from: FROM_EMAIL, to, subject, html })
+      body: JSON.stringify({ from: FROM_EMAIL, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) })
     });
 
     if (!resendRes.ok) {
@@ -78,6 +93,53 @@ export default async function handler(req, res) {
     console.error('Send email failed:', err);
     return res.status(500).json({ error: 'Failed to send email' });
   }
+}
+
+function emailTemplate({ heading, intro, rows, imagesHtml = '', ctaLabel, ctaUrl, footerNote }) {
+  const rowsHtml = rows.map(([label, value]) => `
+    <tr>
+      <td style="padding:10px 0; border-bottom:1px solid #f0dde1; font-family:Helvetica,Arial,sans-serif; font-size:12px; letter-spacing:0.5px; text-transform:uppercase; color:#a9838a; width:110px; vertical-align:top;">${label}</td>
+      <td style="padding:10px 0; border-bottom:1px solid #f0dde1; font-family:Helvetica,Arial,sans-serif; font-size:15px; color:#6b4650;">${value}</td>
+    </tr>
+  `).join('');
+
+  return `
+  <div style="background-color:#fdfaf7; padding:32px 16px; font-family:Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px; margin:0 auto;">
+      <tr>
+        <td style="background:linear-gradient(135deg,#b4707d,#d4af7a); background-color:#c9968a; border-radius:20px 20px 0 0; padding:28px 32px; text-align:center;">
+          <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:26px; color:#ffffff; letter-spacing:0.5px;">Yilian</p>
+          <p style="margin:4px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.85);">Nail Tech in Houston</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background-color:#ffffff; padding:32px; border-left:1px solid #f0dde1; border-right:1px solid #f0dde1;">
+          <h1 style="margin:0 0 10px; font-family:Georgia,'Times New Roman',serif; font-size:22px; color:#b4707d; font-weight:normal;">${heading}</h1>
+          <p style="margin:0 0 22px; font-family:Helvetica,Arial,sans-serif; font-size:15px; color:#6b4650; line-height:1.6;">${intro}</p>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            ${rowsHtml}
+          </table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            ${imagesHtml}
+          </table>
+          ${ctaLabel ? `
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0 6px;">
+            <tr>
+              <td style="border-radius:999px; background-color:#b4707d;">
+                <a href="${ctaUrl}" style="display:inline-block; padding:13px 28px; font-family:Helvetica,Arial,sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:#ffffff; text-decoration:none; border-radius:999px;">${ctaLabel}</a>
+              </td>
+            </tr>
+          </table>` : ''}
+          <p style="margin:22px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#a9838a; line-height:1.6;">${footerNote}</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background-color:#fdfaf7; border-radius:0 0 20px 20px; padding:20px 32px; text-align:center; border:1px solid #f0dde1; border-top:none;">
+          <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:13px; color:#c9968a;">with love, always 🤍</p>
+        </td>
+      </tr>
+    </table>
+  </div>`;
 }
 
 function formatTime(t) {
