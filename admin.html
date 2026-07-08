@@ -209,7 +209,7 @@
     var loader = document.getElementById('pageLoader');
     if(!loader) return;
     document.documentElement.style.overflow = 'hidden';
-    var minTime = new Promise(function(res){ setTimeout(res, 2000); });
+    var minTime = new Promise(function(res){ setTimeout(res, 750); });
     var pageReady = new Promise(function(res){
       if(document.readyState === 'complete') res();
       else window.addEventListener('load', res);
@@ -361,7 +361,7 @@
     </div>
     <div class="field">
       <label style="display:flex; align-items:center; gap:10px; text-transform:none; letter-spacing:0; font-size:0.9rem; color:var(--ink);">
-        <span class="toggle"><input type="checkbox" id="svcFeatured"><span class="toggle-slider"></span></span>
+        <label class="toggle"><input type="checkbox" id="svcFeatured"><span class="toggle-slider"></span></label>
         Show on homepage "Popular Services"
       </label>
     </div>
@@ -633,7 +633,7 @@
           </div>
           <div class="service-row-price">${priceHtml}</div>
           <div class="service-row-actions">
-            <span class="toggle"><input type="checkbox" data-active-toggle="${s.id}" ${s.active ? 'checked' : ''}><span class="toggle-slider"></span></span>
+            <label class="toggle"><input type="checkbox" data-active-toggle="${s.id}" ${s.active ? 'checked' : ''}><span class="toggle-slider"></span></label>
             <button class="btn-sm btn-outline" data-edit="${s.id}">Edit</button>
             <button class="btn-sm btn-danger" data-delete="${s.id}">Delete</button>
           </div>
@@ -829,7 +829,7 @@
       row.className = 'hours-row';
       row.innerHTML = `
         <div class="hours-day">${DAY_NAMES[d]}</div>
-        <span class="toggle"><input type="checkbox" data-day-toggle="${d}" ${open ? 'checked' : ''}><span class="toggle-slider"></span></span>
+        <label class="toggle"><input type="checkbox" data-day-toggle="${d}" ${open ? 'checked' : ''}><span class="toggle-slider"></span></label>
         <div class="hours-times" data-day-times="${d}" style="${open ? '' : 'display:none;'}">
           <input type="time" data-day-start="${d}" value="${open ? open.start : '10:00'}">
           <span>to</span>
