@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const { type, date, time, service, name, contact, instagram, notes, images } = req.body || {};
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'haniya_fahim@hotmail.com';
+  const YILIAN_EMAIL = process.env.YILIAN_EMAIL || 'haniyafahim.dev@gmail.com';
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
   if (!RESEND_API_KEY) {
